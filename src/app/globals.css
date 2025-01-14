@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,17 +7,82 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --input-background: #ffffff;
+  --input-text: #171717;
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --input-background: #1a1a1a;
+    --input-text: #ededed;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Add these styles for form elements */
+input, 
+textarea, 
+select {
+  color: var(--input-text);
+  background-color: var(--input-background);
+  font-family: var(--font-body);
+}
+
+/* Style for dark mode inputs */
+.dark input,
+.dark textarea,
+.dark select {
+  border-color: #374151;
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+/* Placeholder styles */
+::placeholder {
+  color: #6b7280;
+  font-family: var(--font-body);
+}
+
+.dark ::placeholder {
+  color: #9ca3af;
+}
+
+/* Focus styles */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -1px;
+}
+
+/* Custom typography classes */
+.heading-xl {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.heading-lg {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.body-text {
+  font-family: var(--font-body);
+  line-height: 1.6;
 }

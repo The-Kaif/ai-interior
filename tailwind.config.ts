@@ -12,6 +12,10 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        heading: ['Outfit', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'sans-serif'],
+      },
     },
   },
   plugins: [],
