@@ -1,3 +1,6 @@
+"use client";
+import { motion } from 'framer-motion';
+import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { HomeIcon, SparklesIcon, ClockIcon, PaintBrushIcon } from '@heroicons/react/24/outline';
 
 const features = [
@@ -25,30 +28,52 @@ const features = [
 
 export default function Features() {
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 py-20" id="features">
+    <div className="py-20" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-4">
             Features that Make Design Easy
           </h2>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-default-500">
             Everything you need to transform your space with confidence
           </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature) => (
-            <div 
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((feature, index) => (
+            <motion.div
               key={feature.name}
-              className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="h-full"
             >
-              <feature.icon className="h-12 w-12 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {feature.name}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                {feature.description}
-              </p>
-            </div>
+              <Card 
+                className="border-none bg-background/60 backdrop-blur-md h-full"
+                isHoverable
+                shadow="sm"
+              >
+                <CardHeader className="pb-0 pt-6 px-6 flex-col items-center">
+                  <div className="relative w-12 h-12 mb-4">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
+                    <feature.icon className="w-12 h-12 text-primary relative z-10" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">
+                    {feature.name}
+                  </h3>
+                </CardHeader>
+                <CardBody className="text-center pb-6 pt-2 flex-grow">
+                  <p className="text-default-500">
+                    {feature.description}
+                  </p>
+                </CardBody>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </div>

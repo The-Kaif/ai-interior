@@ -1,12 +1,7 @@
-import type { Metadata } from "next";
+import { Providers } from "./providers";
+import TopBar from "./components/TopBar";
 import "./globals.css";
-import TopBar from "@/app/components/TopBar";
-import Footer from "@/app/components/Footer";
-
-export const metadata: Metadata = {
-  title: "AI Interior Designer",
-  description: "Transform your space with AI-powered interior design suggestions",
-};
+import Footer from "./components/Footer";
 
 export default function RootLayout({
   children,
@@ -14,13 +9,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="flex flex-col min-h-screen">
-        <TopBar />
-        <div className="pt-16 flex-grow">
-          {children}
+    <html lang="en" className="dark">
+      <body>
+        <Providers>
+          <TopBar />
+          <main className="pt-16">
+            {children}
+          </main>
           <Footer />
-        </div>
+        </Providers>
       </body>
     </html>
   );

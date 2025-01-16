@@ -1,72 +1,108 @@
+"use client";
+import { motion } from 'framer-motion';
+import { Card, CardBody, CardHeader, Button, Chip } from "@nextui-org/react";
+import { CheckIcon } from "@heroicons/react/24/outline";
+
+const plans = [
+  {
+    name: 'Basic',
+    price: 'Free',
+    features: ['3 room designs/month', 'Basic styles', 'Standard resolution'],
+  },
+  {
+    name: 'Pro',
+    price: '$19/month',
+    features: ['Unlimited designs', 'All styles', 'HD resolution', 'Priority support'],
+    highlighted: true,
+  },
+  {
+    name: 'Business',
+    price: '$49/month',
+    features: ['Everything in Pro', 'API access', 'Custom branding', '24/7 support'],
+  },
+];
+
 export default function Pricing() {
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 py-20" id="pricing">
+    <div className="py-20" id="pricing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-4">
             Simple Pricing
           </h2>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-default-500">
             Choose the plan that works best for you
           </p>
-        </div>
+        </motion.div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              name: 'Basic',
-              price: 'Free',
-              features: ['3 room designs/month', 'Basic styles', 'Standard resolution'],
-            },
-            {
-              name: 'Pro',
-              price: '$19/month',
-              features: ['Unlimited designs', 'All styles', 'HD resolution', 'Priority support'],
-              highlighted: true,
-            },
-            {
-              name: 'Business',
-              price: '$49/month',
-              features: ['Everything in Pro', 'API access', 'Custom branding', '24/7 support'],
-            },
-          ].map((plan) => (
-            <div
+          {plans.map((plan, index) => (
+            <motion.div
               key={plan.name}
-              className={`bg-white dark:bg-gray-900 p-8 rounded-lg shadow-sm ${
-                plan.highlighted ? 'ring-2 ring-blue-600' : ''
-              }`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="h-full"
             >
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                {plan.name}
-              </h3>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-                {plan.price}
-              </p>
-              <ul className="space-y-4 mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center text-gray-600 dark:text-gray-300">
-                    <svg
-                      className="h-5 w-5 text-blue-600 mr-2"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+              <Card 
+                className={`border-none h-full ${
+                  plan.highlighted 
+                    ? 'bg-primary/10 shadow-lg shadow-primary/30' 
+                    : 'bg-background/60'
+                } backdrop-blur-md`}
+                isHoverable
+              >
+                <CardHeader className="flex-col items-center pt-8 px-6 pb-0">
+                  {plan.highlighted && (
+                    <Chip 
+                      color="primary" 
+                      variant="shadow"
+                      className="absolute -top-1 p-2 mt-3 mb-3"
                     >
-                      <path d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <button className={`w-full py-2 px-4 rounded ${
-                plan.highlighted
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600'
-              } transition-colors`}>
-                Get Started
-              </button>
-            </div>
+                      Most Popular
+                    </Chip>
+                  )}
+                  <h3 className="text-xl font-semibold text-foreground mb-2 mt-2">
+                    {plan.name}
+                  </h3>
+                  <div className="flex items-baseline mb-6">
+                    <span className="text-4xl font-bold text-foreground">
+                      {plan.price.split('/')[0]}
+                    </span>
+                    {plan.price !== 'Free' && (
+                      <span className="text-default-500 ml-1">/month</span>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardBody className="px-6 py-0 flex flex-col h-full">
+                  <div className="flex-grow">
+                    <ul className="space-y-4 mb-8">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-center text-default-500">
+                          <CheckIcon className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="pb-8">
+                    <Button
+                      color={plan.highlighted ? "primary" : "default"}
+                      variant={plan.highlighted ? "shadow" : "bordered"}
+                      size="lg"
+                      className="w-full font-semibold"
+                    >
+                      Get Started
+                    </Button>
+                  </div>
+                </CardBody>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </div>
