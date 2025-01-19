@@ -1,40 +1,46 @@
 "use client";
 
-import { useState, useRef } from 'react';
-import Image from 'next/image';
-import { 
-  Card, 
-  CardBody, 
-  Button, 
-  Textarea, 
-  RadioGroup, 
-  Radio,
+import { useState, useRef } from "react";
+import Image from "next/image";
+import {
+  Card,
+  CardBody,
+  Button,
+  Textarea,
   Spinner,
-  Modal, 
-  ModalContent, 
+  Modal,
+  ModalContent,
   ModalBody,
-  useDisclosure
+  useDisclosure,
 } from "@nextui-org/react";
-import { 
-  ArrowUpTrayIcon, 
-  SparklesIcon, 
-  PhotoIcon, 
-  // ArrowPathIcon, 
-  XMarkIcon, 
-  ArrowsPointingOutIcon 
-} from '@heroicons/react/24/outline';
+import {
+  ArrowUpTrayIcon,
+  SparklesIcon,
+  PhotoIcon,
+  // ArrowPathIcon,
+  XMarkIcon,
+  ArrowsPointingOutIcon,
+} from "@heroicons/react/24/outline";
+import { useAuth, SignIn, SignUp } from "@clerk/nextjs";
+import { useEffect } from "react";
 
 export default function DesignTool() {
+  const { isSignedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [selectedStyle, setSelectedStyle] = useState<string>('modern minimalist');
+  const [selectedStyle, setSelectedStyle] =
+    useState<string>("modern minimalist");
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
-  const [customPrompt, setCustomPrompt] = useState<string>('');
-  const [usedPrompt, setUsedPrompt] = useState<string>('');
+  const [uploadedImagePreview, setUploadedImagePreview] = useState<
+    string | null
+  >(null);
+  const [customPrompt, setCustomPrompt] = useState<string>("");
+  const [usedPrompt, setUsedPrompt] = useState<string>("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  const [isSignUpMode, setIsSignUpMode] = useState(true); // Toggle between sign up or sign in
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,19 +51,34 @@ export default function DesignTool() {
     }
   };
 
+  useEffect(() => {
+    if (isSignedIn) {
+      // Perform any actions needed after login
+      console.log("User is signed in");
+    }
+  }, [isSignedIn]);
+
   const handleGenerate = async () => {
+    if (isLoading) return; // Prevent duplicate requests
+
+    if (!isSignedIn) {
+      onOpen(); // Prompt login if not signed in
+      return;
+    }
+
     if (!uploadedImage) {
-      alert('Please upload a room photo first');
+      alert("Please upload a room photo first");
       return;
     }
 
     if (!customPrompt) {
-      alert('Please describe your desired room design');
+      alert("Please describe your desired room design");
       return;
     }
-
     setIsLoading(true);
-    
+    setResult(null);
+    setUsedPrompt("");
+
     try {
       // Convert image to base64
       const base64Image = await new Promise((resolve) => {
@@ -67,24 +88,24 @@ export default function DesignTool() {
       });
 
       // Make API call
-      const response = await fetch('/api/generate', {
-        method: 'POST',
+      const response = await fetch("/api/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           image: base64Image,
           prompt: customPrompt,
-          style: selectedStyle || 'modern minimalist'
-        })
+          style: selectedStyle || "modern minimalist",
+        }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
-      
+
       // Update state with results
       if (data.usedPrompt) {
         setUsedPrompt(data.usedPrompt);
@@ -93,18 +114,17 @@ export default function DesignTool() {
 
       // Scroll to results
       if (resultsRef.current) {
-        resultsRef.current.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
+        resultsRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
         });
       }
-
     } catch (error: unknown) {
-      console.error('Detailed error:', error);
+      console.error("Detailed error:", error);
       if (error instanceof Error) {
         alert(error.message);
       } else {
-        alert('Error generating image');
+        alert("Error generating image");
       }
     } finally {
       setIsLoading(false);
@@ -142,11 +162,13 @@ export default function DesignTool() {
                   Upload Your Room Photo
                 </h2>
                 <div
-                  onClick={() => document.getElementById('room-image')?.click()}
+                  onClick={() => document.getElementById("room-image")?.click()}
                   className={`relative border-2 border-dashed rounded-xl p-10 transition-all cursor-pointer
-                    ${uploadedImagePreview 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-default-200 hover:border-primary'}`}
+                    ${
+                      uploadedImagePreview
+                        ? "border-primary bg-primary/5"
+                        : "border-default-200 hover:border-primary"
+                    }`}
                 >
                   <input
                     type="file"
@@ -191,21 +213,29 @@ export default function DesignTool() {
                 </h2>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    'Modern Minimalist',
-                    'Scandinavian',
-                    'Industrial',
-                    'Bohemian',
-                    'Contemporary',
-                    'Mid-Century Modern'
+                    "Modern Minimalist",
+                    "Scandinavian",
+                    "Industrial",
+                    "Bohemian",
+                    "Contemporary",
+                    "Mid-Century Modern",
                   ].map((style) => (
                     <Button
                       key={style}
-                      color={selectedStyle === style.toLowerCase() ? "bordered" : "default"}
-                      variant={selectedStyle === style.toLowerCase() ? "bordered" : "flat"}
+                      color={
+                        selectedStyle === style.toLowerCase()
+                          ? "bordered"
+                          : "default"
+                      }
+                      variant={
+                        selectedStyle === style.toLowerCase()
+                          ? "bordered"
+                          : "flat"
+                      }
                       className={`w-full h-14 text-base font-medium transition-all ${
-                        selectedStyle === style.toLowerCase() 
-                          ? 'bg-primary/20' 
-                          : 'hover:bg-default-100'
+                        selectedStyle === style.toLowerCase()
+                          ? "bg-primary/20"
+                          : "hover:bg-default-100"
                       }`}
                       onClick={() => setSelectedStyle(style.toLowerCase())}
                     >
@@ -242,7 +272,7 @@ export default function DesignTool() {
               isDisabled={isLoading || !uploadedImage || !customPrompt}
               startContent={isLoading && <Spinner size="sm" />}
             >
-              {isLoading ? 'Generating...' : 'Generate Design'}
+              {isLoading ? "Generating..." : "Generate Design"}
             </Button>
           </div>
 
@@ -336,8 +366,8 @@ export default function DesignTool() {
       </main>
 
       {/* Fullscreen Image Modal */}
-      <Modal 
-        isOpen={!!fullscreenImage} 
+      <Modal
+        isOpen={!!fullscreenImage}
         onClose={() => setFullscreenImage(null)}
         size="full"
         hideCloseButton
@@ -396,6 +426,14 @@ export default function DesignTool() {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalContent>
+          <ModalBody>
+            <SignUp fallbackRedirectUrl="/design"/>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </div>
   );
-} 
+}
